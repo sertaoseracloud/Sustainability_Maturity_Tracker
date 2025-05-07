@@ -1,0 +1,47 @@
+name: Upload Sustainability Data
+
+on:
+  push:
+    paths: [ "maturity.json" ]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    env:
+      STORAGE_ACCOUNT: yourstorageaccountname
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Get current date
+      id: date
+      run: echo "date=$(date +'%Y/%m/%d')" >> $GITHUB_OUTPUT
+
+    - name: Create container if not exists
+      run: |
+        az storage container create \
+          --name sustainability-data \
+          --account-name $STORAGE_ACCOUNT \
+          --auth-mode login \
+          --fail-on-exist false
+
+    - name: Upload JSON with date
+      run: |
+        az storage blob upload \
+          --file maturity.json \
+          --container-name sustainability-data \
+          --name "raw/maturity-${{ steps.date.outputs.date }}.json" \
+          --account-name $STORAGE_ACCOUNT \
+          --auth-mode login
