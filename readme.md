@@ -512,7 +512,7 @@ sustainability-data/
   * `AZURE_TENANT_ID`
   * `AZURE_SUBSCRIPTION_ID`
 
-* Definir o nome da conta de armazenamento no `env.STORAGE_ACCOUNT` do workflow (`.github/workflows/send-maturity.yml`).
+* Defina o nome da conta de armazenamento em `env.STORAGE_ACCOUNT` no workflow (`.github/workflows/send-maturity.yml`).
 
 ---
 
